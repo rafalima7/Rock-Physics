@@ -78,7 +78,7 @@ rho_1 = 3100 # Ankerita
 rho_2 = 2710 # Calcita
 
 # rho_rock = 2214.162835
-
+a
 K_1 = 70
 K_2 = 76
 
