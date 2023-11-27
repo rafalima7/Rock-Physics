@@ -17,10 +17,10 @@ def gassman(Vp_dry, Vs_dry, rho_dry, rho_fl_sat, K_fl_sat, K_min, phi):
     mi_sat = mi_dry
     
     Vp_sat = np.sqrt(((K_sat + (4/3)*mi_sat)/rho_sat))
-    Vs_sat = np.sqrt((mi_dry/rho_dry))
+    Vs_sat = np.sqrt((mi_sat/rho_sat))
     
 
-    return Vp_sat, Vs_sat, rho_sat, K_sat
+    return Vp_sat, Vs_sat, rho_sat, K_sat, K_dry
 #%% 
 
 import pandas as pd
@@ -61,83 +61,94 @@ rho_fl_sat = 997 # Densidade da água em kg/m³
 K_fl_sat = 2.05 #GPa modulo de incompressibilidade da água
 phi = np.array(df['Porosity']/100).reshape(-1,1)
 rho_rock = rho_dry/(1-phi)
-Vp_dry = np.array(df['Vp(Radial) Dry']).reshape(-1,1)
-Vs_dry = np.array(df['Vs(Radial) Dry']).reshape(-1,1)
-# Vp_sat = np.array(df[])
+# Vp_dry = np.array(df['Vp(Radial) Dry']).reshape(-1,1)
+# Vs_dry = np.array(df['Vs(Radial) Dry']).reshape(-1,1)
+
+# # Vp_sat = np.array(df[])
 
 Vp_sat_exp = np.array(df['Vp (Radial) Sat']).reshape(-1,1)
+Vp_dry_exp = np.array(df['Vp(Radial) Dry']).reshape(-1,1)
 Vs_sat_exp = np.array(df['Vs (Radial) Sat']).reshape(-1,1)
+Vs_dry_exp = np.array(df['Vs(Radial) Dry']).reshape(-1,1)
 
 rho_sat_exp = np.array(df['Density Sat']).reshape(-1,1)
-K_sat_exp = (Vp_sat_exp**2 - (4/3)*Vs_sat_exp)*rho_sat_exp
+K_sat_exp = (Vp_sat_exp**2 - (4/3)*Vs_sat_exp**2)*rho_sat_exp
 #%%
 # phi = 0.215
 # phi = phi/100
 
 rho_1 = 3100 # Ankerita
 rho_2 = 2710 # Calcita
-
+# rho_3 = 2870
+# rho_medio = (rho_1+ rho_2+rho_3)/3
 # rho_rock = 2214.162835
 
 K_1 = 70
 K_2 = 76
+# K_3 = 94
 
 mi_1 = 32
 mi_2 = 30
+mi_3 = 45
 
 f_1 = (rho_rock - rho_2)/(rho_1 - rho_2)
 f_2 = 1 - f_1
 
+
 # Vp_dry = 3721.618954
 # Vs_dry = 2365.119197
 
-K_min = f_1*K_1 + f_2*K_2
+K_min = f_1*K_1 + f_2*K_2 
 mi_min = f_1*mi_1 + f_2*mi_2
 
 # K_eff = (Vp**2 - 4/3*Vs**2)*rho_rock
 
 #%%
 
-Vp_sat_gass, Vs_sat_gass, rho_sat_gass, K_sat_gass = gassman(Vp_dry, Vs_dry, rho_dry, rho_fl_sat, K_fl_sat, K_min, phi)
+Vp_sat_gass, Vs_sat_gass, rho_sat_gass, K_sat_gass, K_dry = gassman(Vp_dry_exp, Vs_dry_exp, rho_dry, rho_fl_sat, K_fl_sat, K_min, phi)
 
-n = np.arange(1,len(Vp_dry)+1)
+n = np.arange(1,len(Vp_dry_exp)+1)
 #%%
 
 import matplotlib.pyplot as plt
 
-plt.figure(dpi=300, figsize=[7.5,7.5])
+plt.figure(dpi=300, figsize=[7,7])
 plt.style.use('ggplot')
 plt.subplot(221)
-plt.scatter(n, Vp_sat_exp, label = 'Experimental')
-plt.scatter(n, Vp_sat_gass, label = 'Gassman')
+plt.scatter(n, Vp_dry_exp, label = 'Dry Experimental')
+plt.scatter(n, Vp_sat_exp, label = 'Sat Experimental')
+plt.scatter(n, Vp_sat_gass, label = 'Sat Gassman')
 plt.ylabel('Velocity[$m/s$]')
 plt.xlabel('Samples')
-plt.legend(fontsize = 10)
+plt.legend(fontsize = 7)
 plt.title('$V_p$')
 plt.subplot(222)
-plt.scatter(n, Vs_sat_exp, label = 'Experimental')
-plt.scatter(n, Vs_sat_gass, label = 'Gassman')
+plt.scatter(n, Vs_dry_exp, label = 'Dry Experimental')
+plt.scatter(n, Vs_sat_exp, label = 'Sat Experimental')
+plt.scatter(n, Vs_sat_gass, label = 'Sat Gassman')
 plt.ylabel('Velocity[$m/s$]')
 plt.xlabel('Samples')
-plt.legend(fontsize = 10)
+plt.legend(fontsize = 7, loc='best')
 plt.title('$V_s$')
 plt.subplot(223)
-plt.scatter(n, rho_sat_exp, label = 'Experimental')
-plt.scatter(n, rho_sat_gass, label = 'Gassman')
+plt.scatter(n, rho_dry, label = 'Dry Experimental')
+plt.scatter(n, rho_sat_exp, label = 'Sat Experimental')
+plt.scatter(n, rho_sat_gass, label = 'Sat Gassman')
 plt.ylabel('Density[$kg/m^3]$')
 plt.xlabel('Samples')
-plt.legend(fontsize = 10)
+plt.legend(fontsize = 7)
 plt.title('$\u03c1$')
 plt.subplot(224)
-plt.scatter(n, K_sat_exp, label = 'Experimental')
-plt.scatter(n, K_sat_gass, label = 'Gassman')
+plt.scatter(n, K_dry, label = 'Dry Experimental')
+plt.scatter(n, K_sat_exp, label = 'Sat Experimental')
+plt.scatter(n, K_sat_gass, label = 'SatGassman')
 plt.ylabel('Pressure[$GPa$]')
 plt.xlabel('Samples')
-plt.legend(fontsize = 10)
+plt.legend(fontsize = 7)
 plt.title('$K_{sat}$')
 plt.suptitle('Water Saturation - Gassman', fontsize=20)
 plt.tight_layout()
 
-'''
-Colocar medidas de amostra seca, saturada e gassman no grafico acima
-'''
+
+#%% Voitgh e Reuss
+
