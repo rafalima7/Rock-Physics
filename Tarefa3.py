@@ -199,8 +199,8 @@ K_reuss = np.array([])
 #     K_reuss = 1/K_reuss
 # K_reuss = 1/K_reuss
 
-K_reuss = ((1 - space_porosity)/K_1 + (space_porosity)/K_fl_sat)**-1
-K_voigt = ((1 - space_porosity)*K_1 + space_porosity*K_fl_sat)
+K_reuss = ((1 - space_porosity)/K_min[0] + (space_porosity)/K_fl_sat)**-1
+K_voigt = ((1 - space_porosity)*K_min[0] + space_porosity*K_fl_sat)
 
 # K_voigt = (K_1 * K_2) * (1 - space_porosity) / (K_1 - K_2) 
 
@@ -210,6 +210,4 @@ plt.plot(space_porosity, K_voigt, label='Voigt')
 plt.scatter(phi, K_dry, label = 'Dry Experimental')
 plt.scatter(phi, K_sat_exp, label = 'Sat Experimental')
 plt.scatter(phi, K_sat_gass)
-# plt.plot(K_voigt)
-#%%
 
