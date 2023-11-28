@@ -191,8 +191,16 @@ plt.suptitle('Water Saturation - Gassman', fontsize=20)
 plt.tight_layout()
 #%% Voitgh e Reuss
 
-K_reuss = 
+space_posority = np.arange(0,1,0.1)
+K_reuss = np.array([])
+# for i in range(0, len(K_min)):
+#     K_reuss = np.append(K_reuss, phi[i]/K_min[i])
+#     K_reuss = 1/K_reuss
+K_reuss = (phi/K_1 + phi/K_2 + phi/K_fl_sat)**-1
+# K_voigt = space_posority*K_fl_sat 
 
+plt.plot(K_reuss)
+# plt.plot(K_voigt)
 #%%
 plt.figure(dpi=300)
 plt.scatter(f_1,f_2)
