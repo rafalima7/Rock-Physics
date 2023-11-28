@@ -11,7 +11,7 @@ def gassman(Vp_dry, Vs_dry, rho_dry, rho_fl_sat, K_fl_sat, K_min, phi):
     
     mi_dry = rho_dry*Vs_dry**2
     K_dry = rho_dry*Vp_dry**2-(4/3)*mi_dry
-    
+    K_dry = K_dry/1e9
     K_sat = K_dry +( ((1-(K_dry/K_min))**2)/(phi/K_fl_sat + (1-phi)/K_min + K_dry/K_min**2))
     
     mi_sat = mi_dry
@@ -58,7 +58,7 @@ print(df)
 # rho_dry = 2214.162835
 rho_dry = np.array([df['Density Dry']]).reshape(-1, 1)
 rho_fl_sat = 997 # Densidade da água em kg/m³
-K_fl_sat = 2.05e10 #GPa modulo de incompressibilidade da água
+K_fl_sat = 2.05 #GPa modulo de incompressibilidade da água
 phi = np.array(df['Porosity']/100).reshape(-1,1)
 rho_rock = rho_dry/(1-phi)
 # Vp_dry = np.array(df['Vp(Radial) Dry']).reshape(-1,1)
@@ -73,6 +73,7 @@ Vs_dry_exp = np.array(df['Vs(Radial) Dry']).reshape(-1,1)
 
 rho_sat_exp = np.array(df['Density Sat']).reshape(-1,1)
 K_sat_exp = (Vp_sat_exp**2 - (4/3)*Vs_sat_exp**2)*rho_sat_exp
+K_sat_exp = K_sat_exp/1e9
 #%%
 # phi = 0.215
 # phi = phi/100
@@ -83,12 +84,12 @@ rho_2 = 2710 # Calcita
 # rho_medio = (rho_1+ rho_2+rho_3)/3
 # rho_rock = 2214.162835
 
-K_1 = 70e10
-K_2 = 76e10
+K_1 = 70
+K_2 = 76
 # K_3 = 94
 
-mi_1 = 32e10
-mi_2 = 30e10
+mi_1 = 32
+mi_2 = 30
 mi_3 = 45
 
 f_1 = (rho_rock - rho_2)/(rho_1 - rho_2)
@@ -197,15 +198,18 @@ K_reuss = np.array([])
 #     K_reuss = np.append(K_reuss, phi[i]/K_min[i])
 #     K_reuss = 1/K_reuss
 # K_reuss = 1/K_reuss
-K_reuss = ((1- space_porosity)/K_2 + space_porosity/K_fl_sat)**-1
-K_voigt = ((1-space_porosity)*K_2 + space_porosity*K_fl_sat)
+
+K_reuss = ((1 - space_porosity)/K_1 + (space_porosity)/K_fl_sat)**-1
+K_voigt = ((1 - space_porosity)*K_1 + space_porosity*K_fl_sat)
 
 # K_voigt = (K_1 * K_2) * (1 - space_porosity) / (K_1 - K_2) 
 
 plt.figure(dpi=300)
-plt.plot(space_porosity,K_reuss, label='Reuss')
-plt.plot(space_porosity,K_voigt, label='Reuss')
-plt.scatter(phi, K_dry)
+plt.plot(space_porosity, K_reuss, label='Reuss')
+plt.plot(space_porosity, K_voigt, label='Voigt')
+plt.scatter(phi, K_dry, label = 'Dry Experimental')
+plt.scatter(phi, K_sat_exp, label = 'Sat Experimental')
+plt.scatter(phi, K_sat_gass)
 # plt.plot(K_voigt)
 #%%
 
