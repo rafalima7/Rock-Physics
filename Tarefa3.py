@@ -58,7 +58,7 @@ print(df)
 # rho_dry = 2214.162835
 rho_dry = np.array([df['Density Dry']]).reshape(-1, 1)
 rho_fl_sat = 997 # Densidade da água em kg/m³
-K_fl_sat = 2.05 #GPa modulo de incompressibilidade da água
+K_fl_sat = 2.05e10 #GPa modulo de incompressibilidade da água
 phi = np.array(df['Porosity']/100).reshape(-1,1)
 rho_rock = rho_dry/(1-phi)
 # Vp_dry = np.array(df['Vp(Radial) Dry']).reshape(-1,1)
@@ -83,12 +83,12 @@ rho_2 = 2710 # Calcita
 # rho_medio = (rho_1+ rho_2+rho_3)/3
 # rho_rock = 2214.162835
 
-K_1 = 70
-K_2 = 76
+K_1 = 70e10
+K_2 = 76e10
 # K_3 = 94
 
-mi_1 = 32
-mi_2 = 30
+mi_1 = 32e10
+mi_2 = 30e10
 mi_3 = 45
 
 f_1 = (rho_rock - rho_2)/(rho_1 - rho_2)
@@ -191,18 +191,21 @@ plt.suptitle('Water Saturation - Gassman', fontsize=20)
 plt.tight_layout()
 #%% Voitgh e Reuss
 
-space_posority = np.arange(0,1,0.1)
+space_porosity = np.arange(0,1.1,0.1)
 K_reuss = np.array([])
 # for i in range(0, len(K_min)):
 #     K_reuss = np.append(K_reuss, phi[i]/K_min[i])
 #     K_reuss = 1/K_reuss
-K_reuss = (phi/K_1 + phi/K_2 + phi/K_fl_sat)**-1
-# K_voigt = space_posority*K_fl_sat 
+# K_reuss = 1/K_reuss
+K_reuss = ((1- space_porosity)/K_2 + space_porosity/K_fl_sat)**-1
+K_voigt = ((1-space_porosity)*K_2 + space_porosity*K_fl_sat)
 
-plt.plot(K_reuss)
+# K_voigt = (K_1 * K_2) * (1 - space_porosity) / (K_1 - K_2) 
+
+plt.figure(dpi=300)
+plt.plot(space_porosity,K_reuss, label='Reuss')
+plt.plot(space_porosity,K_voigt, label='Reuss')
+plt.scatter(phi, K_dry)
 # plt.plot(K_voigt)
 #%%
-plt.figure(dpi=300)
-plt.scatter(f_1,f_2)
-plt.xlim(0,1)
-plt.ylim(0,1)
+
