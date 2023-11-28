@@ -216,4 +216,76 @@ plt.title('$K_{sat}$')
 plt.suptitle('Water Saturation - Gassman', fontsize=20)
 plt.tight_layout()
 
+#%% Substituição de Fluidos Biot
+
+def biot(Vp_dry, Vs_dry, rho_min, rho_fl, K_fl, phi, alpha):
+    
+    #The approximate high frequency limiting velocities predicted 
+    #by Biot theory as given by Geertsma-Smit and recast by Bourbie et al.
+    #This gives higher velocities than the actual high frequency limiting
+    #%	velocities.
+    #%Inputs: Vp_dry, Vs_dry: P and S velocities of dry rock
+    #K0, MU0, RO0: Mineral bulk and shear moduli, and density
+    #ROFL,KFL: Pore fluid density and bulk modulus
+    #POR: Porosity
+    #ALFA: Tortuosity parameter in Biot theory. Always > 1. Usually 1 to 3.
+    
+    import numpy as np
+    
+    rho_dry = (1 - phi) * rho_min
+    rho_sat = rho_dry + phi * rho_fl
+    mi_dry = rho_dry *Vs_dry_exp**2
+    K_dry = (rho_dry*Vp_dry**2-(4/3)*mi_dry)/1e9
+    b = K_dry/K_min # Variável auxiliar
+    rho_biot = rho_min*(1-phi) + phi*rho_fl*(1-(1/alpha))
+    t1 = (phi*rho_sat)/(rho_fl*alpha) + (1 - b)*(1-b-2*phi/alpha) #Variável auxiliar
+    t2 = (1 - b - phi)/K_min + phi/K_fl #Variável auxiliar
+    Vp_sat = np.sqrt((K_dry + 4/3*mi_dry + t1/t2)/rho_biot)
+    Vs_sat = np.sqrt(mi_dry/rho_biot)
+    return rho_biot, Vp_sat, Vs_sat
+alpha = 1
+rho_biot, Vp_sat_biot, Vs_sat_biot = biot(Vp_dry_exp, Vs_dry_exp, rho_rock, rho_fl_sat, K_fl_sat, phi, alpha)
+
+#%%
+
+
+plt.figure(dpi=300, figsize=[10,10])
+plt.style.use('ggplot')
+plt.subplot(221)
+plt.scatter(phi, Vp_dry_exp, label = 'Dry Experimental')
+plt.scatter(phi, Vp_sat_exp, label = 'Sat Experimental')
+plt.scatter(phi, Vp_sat_gass, label = 'Sat Gassman')
+plt.scatter(phi, Vp_sat_biot, label = 'Sat Biot')
+plt.ylabel('Velocity[$m/s$]')
+plt.xlabel('Porosity[$v/v$]')
+plt.legend(fontsize = 7)
+plt.title('$V_p$')
+plt.subplot(222)
+plt.scatter(phi, Vs_dry_exp, label = 'Dry Experimental')
+plt.scatter(phi, Vs_sat_exp, label = 'Sat Experimental')
+plt.scatter(phi, Vs_sat_gass, label = 'Sat Gassman')
+plt.scatter(phi, Vs_sat_biot, label = 'Sat Biot')
+plt.ylabel('Velocity[$m/s$]')
+plt.xlabel('Porosity[$v/v$]')
+plt.legend(fontsize = 7, loc='best')
+plt.title('$V_s$')
+plt.subplot(223)
+plt.scatter(phi, rho_dry, label = 'Dry Experimental')
+plt.scatter(phi, rho_sat_exp, label = 'Sat Experimental')
+plt.scatter(phi, rho_sat_gass, label = 'Sat Gassman')
+plt.scatter(phi, rho_biot, label = 'Sat Biot')
+plt.ylabel('Density[$kg/m^3]$')
+plt.xlabel('Porosity[$v/v$]')
+plt.legend(fontsize = 7)
+plt.title('$\u03c1$')
+plt.subplot(224)
+plt.scatter(phi, K_dry, label = 'Dry Experimental')
+plt.scatter(phi, K_sat_exp, label = 'Sat Experimental')
+plt.scatter(phi, K_sat_gass, label = 'SatGassman')
+plt.ylabel('Incompressibility Modulus [$GPa$]')
+plt.xlabel('Porosity[$v/v$]')
+plt.legend(fontsize = 7)
+plt.title('$K_{sat}$')
+plt.suptitle('Water Saturation - Gassman + Biot', fontsize=20)
+plt.tight_layout()
 
