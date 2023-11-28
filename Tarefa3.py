@@ -150,6 +150,31 @@ plt.title('$K_{sat}$')
 plt.suptitle('Water Saturation - Gassman', fontsize=20)
 plt.tight_layout()
 
+#%% Voitgh e Reuss
+
+space_porosity = np.arange(0,1.1,0.1)
+K_reuss = np.array([])
+# for i in range(0, len(K_min)):
+#     K_reuss = np.append(K_reuss, phi[i]/K_min[i])
+#     K_reuss = 1/K_reuss
+# K_reuss = 1/K_reuss
+
+K_reuss1 = ((1 - space_porosity)/K_1 + (space_porosity)/K_fl_sat)**-1
+K_voigt1 = ((1 - space_porosity)*K_1 + space_porosity*K_fl_sat)
+K_reuss2 = ((1 - space_porosity)/K_2 + (space_porosity)/K_fl_sat)**-1
+K_voigt2 = ((1 - space_porosity)*K_2 + space_porosity*K_fl_sat)
+
+# K_voigt = (K_1 * K_2) * (1 - space_porosity) / (K_1 - K_2) 
+
+plt.figure(dpi=300)
+plt.plot(space_porosity, K_reuss1, label='Reuss Ankerita')
+plt.plot(space_porosity, K_voigt1, label='Voigt Ankerita')
+plt.plot(space_porosity, K_reuss2, label='Reuss Calcita')
+plt.plot(space_porosity, K_voigt2, label='Voigt Calcita')
+plt.legend()
+plt.scatter(phi, K_dry, label = 'Dry Experimental')
+plt.scatter(phi, K_sat_exp, label = 'Sat Experimental')
+plt.scatter(phi, K_sat_gass)
 
 #%% Voitgh e Reuss
 
@@ -190,24 +215,5 @@ plt.legend(fontsize = 7)
 plt.title('$K_{sat}$')
 plt.suptitle('Water Saturation - Gassman', fontsize=20)
 plt.tight_layout()
-#%% Voitgh e Reuss
 
-space_porosity = np.arange(0,1.1,0.1)
-K_reuss = np.array([])
-# for i in range(0, len(K_min)):
-#     K_reuss = np.append(K_reuss, phi[i]/K_min[i])
-#     K_reuss = 1/K_reuss
-# K_reuss = 1/K_reuss
-
-K_reuss = ((1 - space_porosity)/K_min[0] + (space_porosity)/K_fl_sat)**-1
-K_voigt = ((1 - space_porosity)*K_min[0] + space_porosity*K_fl_sat)
-
-# K_voigt = (K_1 * K_2) * (1 - space_porosity) / (K_1 - K_2) 
-
-plt.figure(dpi=300)
-plt.plot(space_porosity, K_reuss, label='Reuss')
-plt.plot(space_porosity, K_voigt, label='Voigt')
-plt.scatter(phi, K_dry, label = 'Dry Experimental')
-plt.scatter(phi, K_sat_exp, label = 'Sat Experimental')
-plt.scatter(phi, K_sat_gass)
 
