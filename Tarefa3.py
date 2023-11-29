@@ -11,7 +11,7 @@ def gassman(Vp_dry, Vs_dry, rho_dry, rho_fl_sat, K_fl_sat, K_min, phi):
     
     mi_dry = rho_dry*Vs_dry**2
     K_dry = rho_dry*Vp_dry**2-(4/3)*mi_dry
-    K_dry = K_dry/1e9
+    
     K_sat = K_dry +( ((1-(K_dry/K_min))**2)/(phi/K_fl_sat + (1-phi)/K_min + K_dry/K_min**2))
     
     mi_sat = mi_dry
@@ -73,7 +73,7 @@ Vs_dry_exp = np.array(df['Vs(Radial) Dry']).reshape(-1,1)
 
 rho_sat_exp = np.array(df['Density Sat']).reshape(-1,1)
 K_sat_exp = (Vp_sat_exp**2 - (4/3)*Vs_sat_exp**2)*rho_sat_exp
-K_sat_exp = K_sat_exp/1e9
+
 #%%
 # phi = 0.215
 # phi = phi/100
@@ -106,7 +106,7 @@ mi_min = f_1*mi_1 + f_2*mi_2
 
 #%%
 
-Vp_sat_gass, Vs_sat_gass, rho_sat_gass, K_sat_gass, K_dry = gassman(Vp_dry_exp, Vs_dry_exp, rho_dry, rho_fl_sat, K_fl_sat, K_min, phi)
+Vp_sat_gass, Vs_sat_gass, rho_sat_gass, K_sat_gass, K_dry = gassman(Vp_dry_exp, Vs_dry_exp, rho_dry, rho_fl_sat, K_fl_sat*1e9, K_min*1e9, phi)
 
 n = np.arange(1,len(Vp_dry_exp)+1)
 #%%
@@ -244,8 +244,8 @@ def biot(Vp_dry, Vs_dry, rho_min, K_min, rho_fl, K_fl, phi, alpha):
     Vs_sat = np.sqrt(mi_dry/rho_biot)
     
     return rho_sat, Vp_sat, Vs_sat
-alpha = 1
-rho_biot, Vp_sat_biot, Vs_sat_biot = biot(Vp_dry_exp, Vs_dry_exp, rho_rock, K_min, rho_fl_sat, K_fl_sat, phi, alpha)
+alpha =3
+rho_biot, Vp_sat_biot, Vs_sat_biot = biot(Vp_dry_exp, Vs_dry_exp, rho_rock, K_min*1e9, rho_fl_sat, K_fl_sat*1e9, phi, alpha)
 
 #%%
 
