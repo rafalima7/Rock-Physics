@@ -218,7 +218,7 @@ plt.tight_layout()
 
 #%% Substituição de Fluidos Biot
 
-def biot(Vp_dry, Vs_dry, rho_min, rho_fl, K_fl, phi, alpha):
+def biot(Vp_dry, Vs_dry, rho_min, K_min, rho_fl, K_fl, phi, alpha):
     
     #The approximate high frequency limiting velocities predicted 
     #by Biot theory as given by Geertsma-Smit and recast by Bourbie et al.
@@ -232,19 +232,20 @@ def biot(Vp_dry, Vs_dry, rho_min, rho_fl, K_fl, phi, alpha):
     
     import numpy as np
     
-    rho_dry = (1 - phi) * rho_min
-    rho_sat = rho_dry + phi * rho_fl
-    mi_dry = rho_dry *Vs_dry_exp**2
-    K_dry = (rho_dry*Vp_dry**2-(4/3)*mi_dry)/1e9
-    b = K_dry/K_min # Variável auxiliar
-    rho_biot = rho_min*(1-phi) + phi*rho_fl*(1-(1/alpha))
-    t1 = (phi*rho_sat)/(rho_fl*alpha) + (1 - b)*(1-b-2*phi/alpha) #Variável auxiliar
-    t2 = (1 - b - phi)/K_min + phi/K_fl #Variável auxiliar
-    Vp_sat = np.sqrt((K_dry + 4/3*mi_dry + t1/t2)/rho_biot)
+    rho_dry = (1 - phi)*rho_min
+    rho_sat = (1 - phi)*rho_min + phi*rho_fl_sat
+    mi_dry = rho_dry*Vs_dry**2
+    K_dry = rho_dry*Vp_dry**2 - (4/3)*mi_dry
+    b = K_dry/K_min
+    rho_biot = rho_min*(1 - phi) + phi*rho_fl*(1 - 1/alpha)
+    t1 = phi*rho_sat/(rho_fl*alpha) + (1 - b)*(1 - b - 2*phi/alpha)
+    t2 = (1 - b - phi)/K_min + phi/K_fl 
+    Vp_sat = np.sqrt((1/rho_biot)*(K_dry + (4/3)*mi_dry + t1/t2))
     Vs_sat = np.sqrt(mi_dry/rho_biot)
-    return rho_biot, Vp_sat, Vs_sat
+    
+    return rho_sat, Vp_sat, Vs_sat
 alpha = 1
-rho_biot, Vp_sat_biot, Vs_sat_biot = biot(Vp_dry_exp, Vs_dry_exp, rho_rock, rho_fl_sat, K_fl_sat, phi, alpha)
+rho_biot, Vp_sat_biot, Vs_sat_biot = biot(Vp_dry_exp, Vs_dry_exp, rho_rock, K_min, rho_fl_sat, K_fl_sat, phi, alpha)
 
 #%%
 
